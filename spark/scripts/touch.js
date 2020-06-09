@@ -10,12 +10,12 @@ function setDiamond(){
     // Locate the plane in the Scene
     Promise.all([
         Scene.root.findFirst('Diamond'),
-        Scene.root.findFirst('planeTracker0'),
-        Scene.root.findFirst('plane0')
+        Scene.root.findFirst('planeTracker0')
     ]).then(function(results){
         const diamond = results[0];
         const plane_track = results[1];
-        const plane = results[2];
+        diamond.cameraVisibility.forBackCamera = false;
+
         Diagnostics.log('Start');
         // diamond.cameraVisibility.forBackCamera = false;
         // make size of diamond
@@ -29,14 +29,10 @@ function setDiamond(){
         diamond.transform.z = -1;
 
         // Subscribe to tap gestures on the plane
-        const material = Materials.get('Diamond_mat');
-        TouchGestures.onTap(diamond).subscribe(function (gesture) {
-
-            diamond.cameraVisibility.forBackCamera = false;
-        
+        TouchGestures.onTap().subscribe(function (gesture) {
+            // Diagnostics.log("Tap!")
+            diamond.cameraVisibility.forBackCamera = true;
         });
-
-        // Diagnostics.log(diamond.transform);
 
         Diagnostics.log('Finish');
     });
