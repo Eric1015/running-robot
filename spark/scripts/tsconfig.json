@@ -1,1 +1,5 @@
+<<<<<<< HEAD
 {"include":["*.js"],"compilerOptions":{"baseUrl":"/private/var/folders/nq/h8wv3wr552nf3b58r4fh63hh0000gn/T/66c4a47d958624d95984616094f281dbd/skylight-typedefs","lib":["ES2015"],"outDir":"/private/var/folders/nq/h8wv3wr552nf3b58r4fh63hh0000gn/T/66c4a47d958624d95984616094f281dbd/skylight-typedefs/out-dir","allowJs":true,"checkJs":true}}
+=======
+{"include":["*.js"],"compilerOptions":{"baseUrl":"/private/var/folders/_t/0vc_jz913dl36q4rcwv57yy40000gq/T/66c4a47d958624d95984616094f281dbd/skylight-typedefs","allowJs":true,"checkJs":true,"outDir":"/private/var/folders/_t/0vc_jz913dl36q4rcwv57yy40000gq/T/66c4a47d958624d95984616094f281dbd/skylight-typedefs/out-dir"}}
+>>>>>>> 4ca197fa50cf983a0ae7b1e024aef7a4b3dc9c5f
