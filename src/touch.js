@@ -10,10 +10,13 @@ function setDiamond(){
     // Locate the plane in the Scene
     Promise.all([
         Scene.root.findFirst('Diamond'),
-        Scene.root.findFirst('planeTracker0')
+        Scene.root.findFirst('planeTracker0'),
+        Scene.root.findByPath('planeTracker0/Diamond')
     ]).then(function(results){
         const diamond = results[0];
         const plane_track = results[1];
+        const dimaond_box = results[2];
+
         diamond.cameraVisibility.forBackCamera = false;
 
         Diagnostics.log('Start');
