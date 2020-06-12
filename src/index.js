@@ -5,5 +5,8 @@ const Diagnostics = require('Diagnostics');
 const TouchGestures = require('TouchGestures');
 
 //export touch module
-const Touch = require('./touch.js');
-Touch.setDiamond();
+// const Touch = require('./touch.js');
+// Touch.setDiamond();
+
+const ObjectUI = require('./object_ui.js');
+ObjectUI.objectUI();
