@@ -60,8 +60,8 @@ const devicePosition = CameraInfo.captureDevicePosition;
 function objectUI(){
     Promise.all([
         Scene.root.findByPath('planeTracker0/*'),
-        Scene.root.findByPath('**/canvas0/plane*'),
-        Scene.root.findByPath('**/canvas0/rectangle*/*'),
+        Scene.root.findByPath('**/canvas0/rectangle_button'),
+        Scene.root.findByPath('**/canvas0/rectangle0/*'),
         Scene.root.findFirst('rectangle0')
     ]).then(function(results){
         Diagnostics.log("Start!");
@@ -104,25 +104,20 @@ function objectUI(){
         objectmoveTouch(direction_sign, objects, 0);
         // make appear for move command
         TouchGestures.onLongPress(button).subscribe(function (gesture) {
-            Diagnostics.log("Logn!")
+            Diagnostics.log("Long!")
             direction_sign.forEach(function(sign){
                 sign.hidden = false;
             });
             button.hidden = true;
         });
         let sample_url = 'Type your location before share';
-        let isURL = false
         NativeUI.setText('text0',sample_url)
-        // let sample_url = 'https://www.google.ca/maps/place/6393+NW+Marine+Dr,'
-        // sample_url += '+Vancouver,+BC+V6T+1Z2/@49.2694157,-123.2616838,17z/data='
-        // sample_url += '!3m1!4b1!4m5!3m4!1s0x548672b17ff35033:0x1169fd24e18d4a26!8m2!3d49.2694157!4d-123.2594951';
         TouchGestures.onTap(button).subscribe(function (gesture){
-            if(isURL){
-                NativeUI.enterTextEditMode('text0');
-            } else {
-                Diagnostics.log('Instruction!');
-                NativeUI.enterTextEditMode('text0');
-            }
+            // Diagnostics.log('editext!')
+            NativeUI.enterTextEditMode('text0');
+        });
+        NativeUI.getText('text0').monitor().subscribe(function(textUpdate){
+            Diagnostics.log('You entered ' + textUpdate.newValue);  
         });
 
         Diagnostics.log('Finish!');
