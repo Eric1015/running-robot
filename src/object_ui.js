@@ -6,6 +6,8 @@ const TouchGestures = require('TouchGestures');
 const Reactive = require('Reactive');
 const DeviceMotion = require('DeviceMotion');
 const CameraInfo = require('CameraInfo');
+const Instruction = require('Instruction');
+const NativeUI = require('NativeUI');
 
 function scale(objects){
     for(let i = 0; i < objects.length; i++){
@@ -59,28 +61,32 @@ function objectUI(){
     Promise.all([
         Scene.root.findByPath('planeTracker0/*'),
         Scene.root.findByPath('**/canvas0/plane*'),
-        Scene.root.findByPath('**/canvas0/rectangle*/*')
+        Scene.root.findByPath('**/canvas0/rectangle*/*'),
+        Scene.root.findFirst('rectangle0')
     ]).then(function(results){
         Diagnostics.log("Start!");
         const objects = results[0];
         const button = results[1][0];
         const direction_sign = results[2];
+        const rectangle = results[3];
         // Diagnostics.log(direction_sign[0]);
 
+
+        /**================ object control ==================== */
         scale(objects);
         // Subscribe to tap gestures on the plane
         TouchGestures.onTap().subscribe(function (gesture) {
             // Diagnostics.log("Tap!")
             objects[0].cameraVisibility.forBackCamera = true;
+            direction_sign.forEach(function(sign){
+                sign.hidden = true;
+            });
+            button.hidden = false;
+            
         });
-
-        // Translate the position of the finger on the screen to the plane's
-        // co-ordinate system
-        objectmoveTouch(direction_sign, objects, 0);
-
+        const objectTransform = objects[0].transform;
         // Subscribe to rotation gestures on the plane
         TouchGestures.onRotate(objects[0]).subscribe(function (gesture) {
-            const objectTransform = objects[0].transform;
             // Store the last known y-axis rotation value of the plane
             const lastRotationY = objectTransform.rotationY.pinLastValue();
         
@@ -89,6 +95,36 @@ function objectUI(){
             objectTransform.rotationY = gesture.rotation.mul(-1).add(lastRotationY);
         
         });
+
+        /*==================== button UI ==================================*/
+        direction_sign.forEach(function(sign){
+            sign.hidden = true;
+        });
+        //command button to move object
+        objectmoveTouch(direction_sign, objects, 0);
+        // make appear for move command
+        TouchGestures.onLongPress(button).subscribe(function (gesture) {
+            Diagnostics.log("Logn!")
+            direction_sign.forEach(function(sign){
+                sign.hidden = false;
+            });
+            button.hidden = true;
+        });
+        let sample_url = 'Type your location before share';
+        let isURL = false
+        NativeUI.setText('text0',sample_url)
+        // let sample_url = 'https://www.google.ca/maps/place/6393+NW+Marine+Dr,'
+        // sample_url += '+Vancouver,+BC+V6T+1Z2/@49.2694157,-123.2616838,17z/data='
+        // sample_url += '!3m1!4b1!4m5!3m4!1s0x548672b17ff35033:0x1169fd24e18d4a26!8m2!3d49.2694157!4d-123.2594951';
+        TouchGestures.onTap(button).subscribe(function (gesture){
+            if(isURL){
+                NativeUI.enterTextEditMode('text0');
+            } else {
+                Diagnostics.log('Instruction!');
+                NativeUI.enterTextEditMode('text0');
+            }
+        });
+
         Diagnostics.log('Finish!');
     });
 }
