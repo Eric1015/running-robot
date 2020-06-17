@@ -1,12 +1,17 @@
 // Load in the required modules
-const Materials = require('Materials');
 const Scene = require('Scene');
 const Diagnostics = require('Diagnostics');
-const TouchGestures = require('TouchGestures');
+const Home = require('./home.js');
+const Command = require('./command.js');
 
-//export touch module
-// const Touch = require('./touch.js');
-// Touch.setDiamond();
+//Default setting (hide command and rooad)
+const command = Scene.root.find('command');
+command.hidden = true;
+const object = Scene.root.findFirst('Diamond');
+object.hidden = true;
 
-const ObjectUI = require('./object_ui.js');
-ObjectUI.objectUI();
+//make home page
+Home.home();
+
+//load command module
+Command.command();

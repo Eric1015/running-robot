@@ -1,12 +1,9 @@
 // Load in the required modules
-const Materials = require('Materials');
 const Scene = require('Scene');
 const Diagnostics = require('Diagnostics');
 const TouchGestures = require('TouchGestures');
 const Reactive = require('Reactive');
-const DeviceMotion = require('DeviceMotion');
 const CameraInfo = require('CameraInfo');
-const Instruction = require('Instruction');
 const NativeUI = require('NativeUI');
 
 function scale(objects){
@@ -32,7 +29,7 @@ function objectmoveTouch(signs, objects, idx){
         TouchGestures.onTap(signs[i]).subscribe(function (gesture) {
             if(i === 0){
                 //forward
-                objectTransform.z = Reactive.val(objectTransform.z.pinLastValue() - 0.2);;
+                objectTransform.z = Reactive.val(objectTransform.z.pinLastValue() - 0.2);
             } else if (i === 1){
                 //right
                 objectTransform.x = Reactive.val(objectTransform.x.pinLastValue() + 0.2);
@@ -52,9 +49,19 @@ function objectmoveTouch(signs, objects, idx){
         });
     }
 }
+function capturePhote(button, signs){
+    const isCapturingPhoto = CameraInfo.isCapturingPhoto;
+    const isRecordingVideo = CameraInfo.isRecordingVideo;
 
-const deviceWorldTransform = DeviceMotion.worldTransform;
-const devicePosition = CameraInfo.captureDevicePosition;
+    const isCapture = isCapturingPhoto.or(isRecordingVideo);
+
+    button.hidden = isCapture;
+    signs.hidden = isCapture; 
+}
+function locationObject(x, y, objTransform){
+    let x_world = Reactive.val(x + objTransform.x.pinLastValue());
+    let y_world = Reactive.val(y + objTransform.z.mul(-1));
+}
 
 
 function objectUI(){
@@ -82,8 +89,8 @@ function objectUI(){
                 sign.hidden = true;
             });
             button.hidden = false;
-            
         });
+
         const objectTransform = objects[0].transform;
         // Subscribe to rotation gestures on the plane
         TouchGestures.onRotate(objects[0]).subscribe(function (gesture) {
@@ -102,24 +109,36 @@ function objectUI(){
         });
         //command button to move object
         objectmoveTouch(direction_sign, objects, 0);
+        //set cameara info
+        capturePhote(button, rectangle);
+
         // make appear for move command
         TouchGestures.onLongPress(button).subscribe(function (gesture) {
-            Diagnostics.log("Long!")
             direction_sign.forEach(function(sign){
                 sign.hidden = false;
             });
             button.hidden = true;
         });
-        let sample_url = 'Type your location before share';
-        NativeUI.setText('text0',sample_url)
+
+        let x = 49.2772403, y = -123.0522508;
+        // Diagnostics.log(Units.cm(objectTransform.x.pinLastValue()));
+        // Diagnostics.log(Units.cm(objectTransform.z.pinLastValue()));
+
+
+        // make sharing funciton 
+        let url = 'Type your location before share';
         TouchGestures.onTap(button).subscribe(function (gesture){
-            // Diagnostics.log('editext!')
+            NativeUI.setText('text0',url);
             NativeUI.enterTextEditMode('text0');
         });
+        let text_entered;
         NativeUI.getText('text0').monitor().subscribe(function(textUpdate){
-            Diagnostics.log('You entered ' + textUpdate.newValue);  
+            Diagnostics.log('You entered ' + textUpdate.newValue);
+            text_entered = textUpdate.newValue;
         });
 
+
+        
         Diagnostics.log('Finish!');
     });
 }
