@@ -22,6 +22,11 @@ function home(){
             command.hidden = false;
             ojbect.hidden = false;
         });
+
+        //determine the position of object
+        ojbect.transform.x = 0;
+        ojbect.transform.y = 0;
+        ojbect.transform.z = -0.5;
     });
 }
 

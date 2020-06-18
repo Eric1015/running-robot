@@ -22,29 +22,42 @@ function moveTouch(command, object){
         });
     }
 }
-const timeInMilliseconds = 500;
+
+
+const timeInMilliseconds = 50;
 function movePress(command, object){
-    const objectTransform = object.transform;
     for(let i = 0; i < command.length; i++){
+        const objectTransform = object.transform;
         TouchGestures.onLongPress(command[i]).subscribe(function (gesture){
             if(i === 0){
                 //right
+                const intervalTimer = Time.setInterval(function(){
+                    objectTransform.x = Reactive.val(objectTransform.x.pinLastValue() + 0.03)
+                }, timeInMilliseconds);
                 gesture.state.monitor().subscribe(function (state) {
-                    if(state.newValue !== 'END') {
-                        const intervalTimer = Time.setInterval(function(){
-                            objectTransform.x = Reactive.val(objectTransform.x.pinLastValue() + 0.01);
-                        }, timeInMilliseconds)
-                    } else {
+                    if(state.newValue === 'ENDED') {
                         Time.clearInterval(intervalTimer);
-                    }   
+                    }
                 });
             } else if(i === 1){
                 // left
+                const intervalTimer = Time.setInterval(function(){
+                    objectTransform.x = Reactive.val(objectTransform.x.pinLastValue() - 0.03)
+                }, timeInMilliseconds);
                 gesture.state.monitor().subscribe(function (state) {
+                    if(state.newValue === 'ENDED') {
+                        Time.clearInterval(intervalTimer);
+                    }
                 });
             } else {
                 // forward
+                const intervalTimer = Time.setInterval(function(){
+                    objectTransform.z = Reactive.val(objectTransform.z.pinLastValue() - 0.03)
+                }, timeInMilliseconds);
                 gesture.state.monitor().subscribe(function (state) {
+                    if(state.newValue === 'ENDED') {
+                        Time.clearInterval(intervalTimer);
+                    }
                 });
             }
         });
