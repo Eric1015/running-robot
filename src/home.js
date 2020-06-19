@@ -8,7 +8,7 @@ function home(){
         Scene.root.findFirst('start_button'),
         Scene.root.findFirst('home_text'),
         Scene.root.findFirst('command'),
-        Scene.root.findFirst('Diamond')
+        Scene.root.findFirst('Argon')
     ]).then(function(results){
         const start = results[0];
         const home_txt = results[1];

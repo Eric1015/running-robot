@@ -4,6 +4,11 @@ const Diagnostics = require('Diagnostics');
 const TouchGestures = require('TouchGestures');
 const Reactive = require('Reactive');
 const Time = require('Time');
+const Animation = require('Animation');
+const Audio = require('Audio');
+
+function switchAnimation(){
+}
 
 function moveTouch(command, object){
     const objectTransform = object.transform;
@@ -67,7 +72,7 @@ function movePress(command, object){
 
 function command(){
     Promise.all([
-        Scene.root.findFirst('Diamond'),
+        Scene.root.findFirst('Argon'),
         Scene.root.findByPath('**/canvas0/command/*')
     ]).then(function (results){
         const object = results[0];
@@ -83,5 +88,6 @@ function command(){
 }
 
 module.exports = {
-    command
+    command,
+    switchAnimation
 }
