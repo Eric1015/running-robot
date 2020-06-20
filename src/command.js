@@ -4,11 +4,8 @@ const Diagnostics = require('Diagnostics');
 const TouchGestures = require('TouchGestures');
 const Reactive = require('Reactive');
 const Time = require('Time');
-const Animation = require('Animation');
-const Audio = require('Audio');
+const Patches = require('Patches');
 
-function switchAnimation(){
-}
 
 function moveTouch(command, object){
     const objectTransform = object.transform;
@@ -22,7 +19,11 @@ function moveTouch(command, object){
                 objectTransform.x = Reactive.val(objectTransform.x.pinLastValue() - 0.1);
             } else {
                 // forward
+                let myBoolean = true;
+                Patches.setBooleanValue('myBoolean', myBoolean);
                 objectTransform.z = Reactive.val(objectTransform.z.pinLastValue() - 0.1);
+                myBoolean = false;
+                Patches.setBooleanValue('myBoolean', myBoolean);
             }
         });
     }
@@ -56,12 +57,16 @@ function movePress(command, object){
                 });
             } else {
                 // forward
+                let myBoolean = true;
+                Patches.setBooleanValue('myBoolean', myBoolean);
                 const intervalTimer = Time.setInterval(function(){
                     objectTransform.z = Reactive.val(objectTransform.z.pinLastValue() - 0.03)
                 }, timeInMilliseconds);
                 gesture.state.monitor().subscribe(function (state) {
                     if(state.newValue === 'ENDED') {
                         Time.clearInterval(intervalTimer);
+                        myBoolean = false;
+                        Patches.setBooleanValue('myBoolean', myBoolean);
                     }
                 });
             }
@@ -88,6 +93,5 @@ function command(){
 }
 
 module.exports = {
-    command,
-    switchAnimation
+    command
 }

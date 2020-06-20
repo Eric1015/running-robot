@@ -5,14 +5,13 @@ const Home = require('./home.js');
 const Command = require('./command.js');
 
 //Default setting (hide command and rooad)
-// const command = Scene.root.find('command');
-// command.hidden = true;
-// const object = Scene.root.find('Argon');
-// object.hidden = true;
+const command = Scene.root.find('command');
+command.hidden = true;
+const object = Scene.root.find('Argon');
+object.hidden = true;
 
-// //make home page
-// Home.home();
+//make home page
+Home.home();
 
-// //load command module
-// Command.command();
-Command.switchAnimation();
+//load command module
+Command.command();
