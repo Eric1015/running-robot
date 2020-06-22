@@ -2,6 +2,16 @@
 const Scene = require('Scene');
 const Diagnostics = require('Diagnostics');
 const TouchGestures = require('TouchGestures');
+const Reactive = require('Reactive');
+
+function resetObject(object){
+    //determine the position of object
+    object.transform.x = 0;
+    object.transform.y = -0.1;
+    object.transform.z = 0;
+
+    object.transform.rotationY = Reactive.acos(-1);
+}
 
 function home(){
     Promise.all([
@@ -11,6 +21,7 @@ function home(){
         Scene.root.findByPath('planeTracker0/Argon'),
         Scene.root.findByPath('**/canvas0/Argon_home'),
         Scene.root.findByPath('**/canvas1/road*'),
+        Scene.root.findFirst('gameover'),
     ]).then(function(results){
         const start = results[0];
         const home_txt = results[1];
@@ -18,6 +29,7 @@ function home(){
         const ojbect = results[3][0];
         const object_home = results[4][0];
         const roads = results[5];
+        const gameover = results[6];
 
         //touch start button, game start (hide home page, command and road appear)
         TouchGestures.onTap(start).subscribe(function(gesture){
@@ -26,9 +38,10 @@ function home(){
             command.hidden = false;
             ojbect.hidden = false;
             object_home.hidden = true;
+            gameover.hidden = true;
             let currentX = 0;
-            let currentY = -183.5;
-            let roadsArray = generateRandomArray(10);
+            let currentY = -500;
+            let roadsArray = generateRandomArray(9);
             Diagnostics.log(roadsArray);
             roadsArray.forEach((roadNumber, i) => {
                 if (roadNumber === 0) {
@@ -44,12 +57,9 @@ function home(){
             roads.forEach((road) => {
                 road.hidden = false;
             })
-        });
 
-        //determine the position of object
-        ojbect.transform.x = 0;
-        ojbect.transform.y = 0;
-        ojbect.transform.z = -0.25;
+            resetObject(ojbect);
+        });
     });
 }
 

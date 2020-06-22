@@ -25,42 +25,42 @@ function moveTouch(command, object){
                 //right
                 right(objectTransform);
                 let myBoolean = true;
-                Patches.setBooleanValue('myBoolean', myBoolean);
+                Patches.inputs.setBoolean('myBoolean', myBoolean);
                 const intervalTimer = Time.setInterval(function(){
                     objectTransform.x = Reactive.val(objectTransform.x.pinLastValue() + 0.01);
                 }, timeInMilliseconds_1);
                 const timeoutTimer = Time.setTimeout(function(){
                     Time.clearInterval(intervalTimer);
                     myBoolean = false;
-                    Patches.setBooleanValue('myBoolean', myBoolean);
+                    Patches.inputs.setBoolean('myBoolean', myBoolean);
                     isGameOver();
                 }, 200);
             } else if(i === 1){
                 // left
                 left(objectTransform);
                 let myBoolean = true;
-                Patches.setBooleanValue('myBoolean', myBoolean);
+                Patches.inputs.setBoolean('myBoolean', myBoolean);
                 const intervalTimer = Time.setInterval(function(){
                     objectTransform.x = Reactive.val(objectTransform.x.pinLastValue() - 0.01);
                 }, timeInMilliseconds_1);
                 const timeoutTimer = Time.setTimeout(function(){
                     Time.clearInterval(intervalTimer);
                     myBoolean = false;
-                    Patches.setBooleanValue('myBoolean', myBoolean);
+                    Patches.inputs.setBoolean('myBoolean', myBoolean);
                     isGameOver();
                 }, 200);
             } else {
                 // forward
                 forward(objectTransform);
                 let myBoolean = true;
-                Patches.setBooleanValue('myBoolean', myBoolean);
+                Patches.inputs.setBoolean('myBoolean', myBoolean);
                 const intervalTimer = Time.setInterval(function(){
                     objectTransform.z = Reactive.val(objectTransform.z.pinLastValue() - 0.01);
                 }, timeInMilliseconds_1);
                 const timeoutTimer = Time.setTimeout(function(){
                     Time.clearInterval(intervalTimer);
                     myBoolean = false;
-                    Patches.setBooleanValue('myBoolean', myBoolean);
+                    Patches.inputs.setBoolean('myBoolean', myBoolean);
                     isGameOver();
                 }, 200);
             }
@@ -81,8 +81,8 @@ function movePress(command, object){
                 Patches.setBooleanValue('myBoolean', myBoolean);
                 const intervalTimer = Time.setInterval(function(){
                     objectTransform.x = Reactive.val(objectTransform.x.pinLastValue() + 0.03)
+                    isGameOver();
                 }, timeInMilliseconds);
-                isGameOver();
                 gesture.state.monitor().subscribe(function (state) {
                     if(state.newValue === 'ENDED') {
                         Time.clearInterval(intervalTimer);
@@ -97,8 +97,8 @@ function movePress(command, object){
                 Patches.setBooleanValue('myBoolean', myBoolean);
                 const intervalTimer = Time.setInterval(function(){
                     objectTransform.x = Reactive.val(objectTransform.x.pinLastValue() - 0.03)
+                    isGameOver();
                 }, timeInMilliseconds);
-                isGameOver();
                 gesture.state.monitor().subscribe(function (state) {
                     if(state.newValue === 'ENDED') {
                         Time.clearInterval(intervalTimer);
@@ -113,8 +113,8 @@ function movePress(command, object){
                 Patches.setBooleanValue('myBoolean', myBoolean);
                 const intervalTimer = Time.setInterval(function(){
                     objectTransform.z = Reactive.val(objectTransform.z.pinLastValue() - 0.03)
+                    isGameOver();
                 }, timeInMilliseconds);
-                isGameOver();
                 gesture.state.monitor().subscribe(function (state) {
                     if(state.newValue === 'ENDED') {
                         Time.clearInterval(intervalTimer);
@@ -129,24 +129,58 @@ function movePress(command, object){
 
 function isGameOver() {
     Promise.all([
-        Scene.root.findFirst('Argon'),
+        Scene.root.findByPath('planeTracker0/Argon'),
         Scene.root.findByPath('**/canvas1/road*'),
         Scene.root.findFirst('command'),
     ]).then(function (results) {
-        Diagnostics.log("GOT HERE")
-        const object = results[0];
+        // Diagnostics.log("GOT HERE")
+        const object = results[0][0];
         const roads = results[1];
         const command = results[2];
 
+        const objectTransform_x = object.transform.x.mul(1450).pinLastValue();
+        const objectTransform_z = object.transform.z.mul(-1450).pinLastValue();
+
         let isOnRoad = false;
         for (let road of roads) {
-            if (object.transform.x >= road.transform.x - 250 && object.transform.x <= road.transform.x + 250 && object.transform.y >= road.transform.y - 250 && object.transform.y <= road.transform.y) {
+            const road_x = road.transform.x.pinLastValue();
+            const road_y = road.transform.y.pinLastValue();
+            if (objectTransform_x >= road_x - 250 && objectTransform_x <= road_x + 250 && objectTransform_z >= road_y - 250 && objectTransform_z <= road_y + 250) {
                 isOnRoad = true;
                 break;
             }
         }
         // it is game over if isOnRoad is false
+        if(isOnRoad === true){
+            Diagnostics.log("is on");
+        } else {
+            // Diagnostics.log("not is on");
+            gameOver();
+        }
     })
+}
+function gameOver(){
+    Promise.all([
+        Scene.root.findByPath('planeTracker0/Argon'),
+        Scene.root.findByPath('**/canvas1/roads'),
+        Scene.root.findFirst('command'),
+        Scene.root.findFirst('gameover'),
+        Scene.root.findFirst('start_button'),
+    ]).then(function(results){
+        const object = results[0][0];
+        const roads = results[1];
+        const command = results[2];
+        const gameover = results[3];
+        const start = results[4];
+
+        object.hidden = true;
+        // roads.forEach(function(road){
+        //     road.hidden = true;
+        // });
+        command.hidden = true;
+        gameover.hidden = false;
+        start.hidden = false;
+    });
 }
 
 
