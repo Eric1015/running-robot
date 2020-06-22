@@ -33,6 +33,7 @@ function moveTouch(command, object){
                     Time.clearInterval(intervalTimer);
                     myBoolean = false;
                     Patches.setBooleanValue('myBoolean', myBoolean);
+                    isGameOver();
                 }, 200);
             } else if(i === 1){
                 // left
@@ -46,6 +47,7 @@ function moveTouch(command, object){
                     Time.clearInterval(intervalTimer);
                     myBoolean = false;
                     Patches.setBooleanValue('myBoolean', myBoolean);
+                    isGameOver();
                 }, 200);
             } else {
                 // forward
@@ -59,6 +61,7 @@ function moveTouch(command, object){
                     Time.clearInterval(intervalTimer);
                     myBoolean = false;
                     Patches.setBooleanValue('myBoolean', myBoolean);
+                    isGameOver();
                 }, 200);
             }
         });
@@ -79,6 +82,7 @@ function movePress(command, object){
                 const intervalTimer = Time.setInterval(function(){
                     objectTransform.x = Reactive.val(objectTransform.x.pinLastValue() + 0.03)
                 }, timeInMilliseconds);
+                isGameOver();
                 gesture.state.monitor().subscribe(function (state) {
                     if(state.newValue === 'ENDED') {
                         Time.clearInterval(intervalTimer);
@@ -94,6 +98,7 @@ function movePress(command, object){
                 const intervalTimer = Time.setInterval(function(){
                     objectTransform.x = Reactive.val(objectTransform.x.pinLastValue() - 0.03)
                 }, timeInMilliseconds);
+                isGameOver();
                 gesture.state.monitor().subscribe(function (state) {
                     if(state.newValue === 'ENDED') {
                         Time.clearInterval(intervalTimer);
@@ -109,6 +114,7 @@ function movePress(command, object){
                 const intervalTimer = Time.setInterval(function(){
                     objectTransform.z = Reactive.val(objectTransform.z.pinLastValue() - 0.03)
                 }, timeInMilliseconds);
+                isGameOver();
                 gesture.state.monitor().subscribe(function (state) {
                     if(state.newValue === 'ENDED') {
                         Time.clearInterval(intervalTimer);
@@ -119,6 +125,28 @@ function movePress(command, object){
             }
         });
     }
+}
+
+function isGameOver() {
+    Promise.all([
+        Scene.root.findFirst('Argon'),
+        Scene.root.findByPath('**/canvas1/road*'),
+        Scene.root.findFirst('command'),
+    ]).then(function (results) {
+        Diagnostics.log("GOT HERE")
+        const object = results[0];
+        const roads = results[1];
+        const command = results[2];
+
+        let isOnRoad = false;
+        for (let road of roads) {
+            if (object.transform.x >= road.transform.x - 250 && object.transform.x <= road.transform.x + 250 && object.transform.y >= road.transform.y - 250 && object.transform.y <= road.transform.y) {
+                isOnRoad = true;
+                break;
+            }
+        }
+        // it is game over if isOnRoad is false
+    })
 }
 
 
