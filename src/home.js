@@ -22,6 +22,8 @@ function home(){
         Scene.root.findByPath('**/canvas0/Argon_home'),
         Scene.root.findByPath('**/canvas1/road*'),
         Scene.root.findFirst('gameover'),
+        Scene.root.findFirst('canvas2'),
+        Scene.root.findFirst('goal'),
     ]).then(function(results){
         const start = results[0];
         const home_txt = results[1];
@@ -30,6 +32,8 @@ function home(){
         const object_home = results[4][0];
         const roads = results[5];
         const gameover = results[6];
+        const canvas2 = results[7];
+        const goal = results[8];
 
         //touch start button, game start (hide home page, command and road appear)
         TouchGestures.onTap(start).subscribe(function(gesture){
@@ -57,6 +61,9 @@ function home(){
             roads.forEach((road) => {
                 road.hidden = false;
             })
+            canvas2.transform.x = currentX * 0.00075;
+            canvas2.transform.z = -1 * currentY * 0.00075;
+            goal.hidden = false;
 
             resetObject(ojbect);
         });

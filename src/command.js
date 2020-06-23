@@ -82,6 +82,7 @@ function movePress(command, object){
                 const intervalTimer = Time.setInterval(function(){
                     objectTransform.x = Reactive.val(objectTransform.x.pinLastValue() + 0.03)
                     isGameOver();
+                    isGoal();
                 }, timeInMilliseconds);
                 gesture.state.monitor().subscribe(function (state) {
                     if(state.newValue === 'ENDED') {
@@ -98,6 +99,7 @@ function movePress(command, object){
                 const intervalTimer = Time.setInterval(function(){
                     objectTransform.x = Reactive.val(objectTransform.x.pinLastValue() - 0.03)
                     isGameOver();
+                    isGoal();
                 }, timeInMilliseconds);
                 gesture.state.monitor().subscribe(function (state) {
                     if(state.newValue === 'ENDED') {
@@ -114,6 +116,7 @@ function movePress(command, object){
                 const intervalTimer = Time.setInterval(function(){
                     objectTransform.z = Reactive.val(objectTransform.z.pinLastValue() - 0.03)
                     isGameOver();
+                    isGoal();
                 }, timeInMilliseconds);
                 gesture.state.monitor().subscribe(function (state) {
                     if(state.newValue === 'ENDED') {
@@ -151,10 +154,7 @@ function isGameOver() {
             }
         }
         // it is game over if isOnRoad is false
-        if(isOnRoad === true){
-            Diagnostics.log("is on");
-        } else {
-            // Diagnostics.log("not is on");
+        if(!isOnRoad){
             gameOver();
         }
     })
@@ -181,6 +181,41 @@ function gameOver(){
         gameover.hidden = false;
         start.hidden = false;
     });
+}
+
+function isGoal() {
+    Promise.all([
+        Scene.root.findByPath('planeTracker0/Argon'),
+        Scene.root.findFirst('canvas2'),
+    ]).then(function(results) {
+        const object = results[0][0];
+        const goal = results[1];
+
+        if (object.transform.z.pinLastValue() >= goal.transform.y.pinLastValue() - 0.05 
+            && object.transform.z.pinLastValue() <= goal.transform.y.pinLastValue() + 0.05 
+            && object.transform.x.pinLastValue() >= goal.transform.x.pinLastValue() - 0.05 
+            && object.transform.x.pinLastValue() <= goal.transform.x.pinLastValue() + 0.05
+        ) {
+            goal();
+        } else {
+            Diagnostics.log('Not goal yet')
+        }
+    })
+}
+
+function goal() {
+    Promise.all([
+        Scene.root.findByPath('planeTracker0/Argon'),
+        Scene.root.findFirst('command'),
+        Scene.root.findFirst('start_button')
+    ]).then(function(results) {
+        const object = results[0][0];
+        const command = results[1];
+        const startButton = results[2];
+
+        command.hidden = true;
+        startButton.hidden = false;
+    })
 }
 
 
