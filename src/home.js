@@ -7,7 +7,7 @@ const Reactive = require('Reactive');
 function resetObject(object){
     //determine the position of object
     object.transform.x = 0;
-    object.transform.y = -0.1;
+    object.transform.y = -0.08;
     object.transform.z = 0;
 
     object.transform.rotationY = Reactive.acos(-1);

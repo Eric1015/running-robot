@@ -162,7 +162,7 @@ function isGameOver() {
 function gameOver(){
     Promise.all([
         Scene.root.findByPath('planeTracker0/Argon'),
-        Scene.root.findByPath('**/canvas1/roads'),
+        Scene.root.findByPath('**/canvas1/road*'),
         Scene.root.findFirst('command'),
         Scene.root.findFirst('gameover'),
         Scene.root.findFirst('start_button'),
@@ -174,9 +174,9 @@ function gameOver(){
         const start = results[4];
 
         object.hidden = true;
-        // roads.forEach(function(road){
-        //     road.hidden = true;
-        // });
+        roads.forEach(function(road){
+            road.hidden = true;
+        });
         command.hidden = true;
         gameover.hidden = false;
         start.hidden = false;
