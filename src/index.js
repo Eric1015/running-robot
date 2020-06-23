@@ -9,6 +9,8 @@ const command = Scene.root.find('command');
 command.hidden = true;
 const object = Scene.root.find('Argon');
 object.hidden = true;
+const goal = Scene.root.find('goal');
+goal.hidden = true;
 
 //make home page
 Home.home();

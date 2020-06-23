@@ -33,6 +33,7 @@ function moveTouch(command, object){
                     Time.clearInterval(intervalTimer);
                     myBoolean = false;
                     Patches.inputs.setBoolean('myBoolean', myBoolean);
+                    isGoal();
                     isGameOver();
                 }, 200);
             } else if(i === 1){
@@ -47,6 +48,7 @@ function moveTouch(command, object){
                     Time.clearInterval(intervalTimer);
                     myBoolean = false;
                     Patches.inputs.setBoolean('myBoolean', myBoolean);
+                    isGoal();
                     isGameOver();
                 }, 200);
             } else {
@@ -61,6 +63,7 @@ function moveTouch(command, object){
                     Time.clearInterval(intervalTimer);
                     myBoolean = false;
                     Patches.inputs.setBoolean('myBoolean', myBoolean);
+                    isGoal();
                     isGameOver();
                 }, 200);
             }
@@ -68,6 +71,7 @@ function moveTouch(command, object){
     }
 }
 
+var gameClear = false;
 
 const timeInMilliseconds = 50;
 function movePress(command, object){
@@ -80,9 +84,12 @@ function movePress(command, object){
                 let myBoolean = true;
                 Patches.setBooleanValue('myBoolean', myBoolean);
                 const intervalTimer = Time.setInterval(function(){
-                    objectTransform.x = Reactive.val(objectTransform.x.pinLastValue() + 0.03)
-                    isGameOver();
+                    objectTransform.x = Reactive.val(objectTransform.x.pinLastValue() + 0.03);
                     isGoal();
+                    if(!gameClear){
+                        // Diagnostics.log("object is not hidden");
+                        isGameOver();
+                    }
                 }, timeInMilliseconds);
                 gesture.state.monitor().subscribe(function (state) {
                     if(state.newValue === 'ENDED') {
@@ -97,9 +104,12 @@ function movePress(command, object){
                 let myBoolean = true;
                 Patches.setBooleanValue('myBoolean', myBoolean);
                 const intervalTimer = Time.setInterval(function(){
-                    objectTransform.x = Reactive.val(objectTransform.x.pinLastValue() - 0.03)
-                    isGameOver();
+                    objectTransform.x = Reactive.val(objectTransform.x.pinLastValue() - 0.03);
                     isGoal();
+                    if(!gameClear){
+                        // Diagnostics.log("object is not hidden");
+                        isGameOver();
+                    }
                 }, timeInMilliseconds);
                 gesture.state.monitor().subscribe(function (state) {
                     if(state.newValue === 'ENDED') {
@@ -114,9 +124,12 @@ function movePress(command, object){
                 let myBoolean = true;
                 Patches.setBooleanValue('myBoolean', myBoolean);
                 const intervalTimer = Time.setInterval(function(){
-                    objectTransform.z = Reactive.val(objectTransform.z.pinLastValue() - 0.03)
-                    isGameOver();
+                    objectTransform.z = Reactive.val(objectTransform.z.pinLastValue() - 0.03);
                     isGoal();
+                    if(!gameClear){
+                        // Diagnostics.log("object is not hidden");
+                        isGameOver();
+                    }
                 }, timeInMilliseconds);
                 gesture.state.monitor().subscribe(function (state) {
                     if(state.newValue === 'ENDED') {
@@ -129,6 +142,7 @@ function movePress(command, object){
         });
     }
 }
+
 
 function isGameOver() {
     Promise.all([
@@ -166,12 +180,14 @@ function gameOver(){
         Scene.root.findFirst('command'),
         Scene.root.findFirst('gameover'),
         Scene.root.findFirst('start_button'),
+        Scene.root.findFirst('goal'),
     ]).then(function(results){
         const object = results[0][0];
         const roads = results[1];
         const command = results[2];
         const gameover = results[3];
         const start = results[4];
+        const goal = results[5];
 
         object.hidden = true;
         roads.forEach(function(road){
@@ -180,6 +196,7 @@ function gameOver(){
         command.hidden = true;
         gameover.hidden = false;
         start.hidden = false;
+        goal.hidden = true;
     });
 }
 
@@ -187,42 +204,59 @@ function isGoal() {
     Promise.all([
         Scene.root.findByPath('planeTracker0/Argon'),
         Scene.root.findFirst('canvas2'),
+        Scene.root.findFirst('road7'),
     ]).then(function(results) {
         const object = results[0][0];
-        const goal = results[1];
+        const goal_tape = results[1];
+        const lastRoad = results[2];
 
-        if (object.transform.z.pinLastValue() >= goal.transform.y.pinLastValue() - 0.05 
-            && object.transform.z.pinLastValue() <= goal.transform.y.pinLastValue() + 0.05 
-            && object.transform.x.pinLastValue() >= goal.transform.x.pinLastValue() - 0.05 
-            && object.transform.x.pinLastValue() <= goal.transform.x.pinLastValue() + 0.05
+        const objectTransform_x = object.transform.x.mul(1450).pinLastValue();
+        const objectTransform_z = object.transform.z.mul(-1450).pinLastValue();
+
+        const goal_x = lastRoad.transform.x.pinLastValue();
+        const goal_y = lastRoad.transform.y.pinLastValue();
+
+        if (objectTransform_z >= goal_y + 200
+            && objectTransform_x >= goal_x - 250 
+            && objectTransform_x <= goal_x + 250
         ) {
             goal();
+            gameClear = true;
         } else {
-            Diagnostics.log('Not goal yet')
+            gameClear = false;
         }
-    })
+    });
 }
 
 function goal() {
     Promise.all([
         Scene.root.findByPath('planeTracker0/Argon'),
         Scene.root.findFirst('command'),
-        Scene.root.findFirst('start_button')
+        Scene.root.findFirst('start_button'),
+        Scene.root.findByPath('**/canvas1/road*'),
+        Scene.root.findFirst('gameclear'),
     ]).then(function(results) {
         const object = results[0][0];
         const command = results[1];
         const startButton = results[2];
+        const roads = results[3];
+        const gameclear = results[4];
 
+        object.hidden = true;
         command.hidden = true;
         startButton.hidden = false;
-    })
+        roads.forEach(function(road){
+            road.hidden = true;
+        });
+        gameclear.hidden = false;
+    });
 }
 
 
 function command(){
     Promise.all([
         Scene.root.findFirst('Argon'),
-        Scene.root.findByPath('**/canvas0/command/*')
+        Scene.root.findByPath('**/canvas0/command/*'),
     ]).then(function (results){
         const object = results[0];
         const command = results[1];

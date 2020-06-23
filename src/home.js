@@ -24,6 +24,7 @@ function home(){
         Scene.root.findFirst('gameover'),
         Scene.root.findFirst('canvas2'),
         Scene.root.findFirst('goal'),
+        Scene.root.findFirst('gameclear'),
     ]).then(function(results){
         const start = results[0];
         const home_txt = results[1];
@@ -34,6 +35,7 @@ function home(){
         const gameover = results[6];
         const canvas2 = results[7];
         const goal = results[8];
+        const gameclear = results[9];
 
         //touch start button, game start (hide home page, command and road appear)
         TouchGestures.onTap(start).subscribe(function(gesture){
@@ -43,6 +45,7 @@ function home(){
             ojbect.hidden = false;
             object_home.hidden = true;
             gameover.hidden = true;
+            gameclear.hidden = true;
             let currentX = 0;
             let currentY = -500;
             let roadsArray = generateRandomArray(9);
@@ -62,7 +65,8 @@ function home(){
                 road.hidden = false;
             })
             canvas2.transform.x = currentX * 0.00075;
-            canvas2.transform.z = -1 * currentY * 0.00075;
+            canvas2.transform.z = -1 * currentY * 0.0008;
+            canvas2.transform.y = 0.13;
             goal.hidden = false;
 
             resetObject(ojbect);
